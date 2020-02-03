@@ -1,0 +1,12 @@
+name: Bayesmeta_naive
+title: Bayesmeta_naive
+username:
+account: sxchen
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1731273
+bundleId: 2762740
+url: https://sxchen.shinyapps.io/Bayesmeta_naive/
+when: 1580350325.2624
+asMultiple: FALSE
+asStatic: FALSE
