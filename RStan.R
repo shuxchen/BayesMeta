@@ -17,7 +17,7 @@ stan.dat_nobias <- list(J = J,
                   sigma = df$sei)
 
 fit0 <- stan(
-  file = "Bayesmeta_nobias.stan",  # Stan program
+  file = "Bayesmeta_nobias_noncentered.stan",  # Stan program
   data = stan.dat_nobias,    # named list of data
   chains = 4,             # number of Markov chains
   warmup = 1000,          # number of warmup iterations per chain
@@ -33,19 +33,31 @@ str(fit0_sim)
 n_sims <- length(fit0_sim$lp__)
 beta_rep <- array(NA, c(n_sims, J))
 for (s in 1:n_sims) {
-  beta_rep[s,] <- rnorm(J, fit2_sim$theta[s,], df$sei)
+  beta_rep[s,] <- rnorm(J, fit0_sim$gamma[s,], df$sei)
 }
 ##Replicated data in new study
 theta_rep <- array(NA, c(n_sims, J))
 beta_rep <- array(NA, c(n_sims, J))
-#If only bias1 and bias3 are present for future study 
 for (s in 1:n_sims){
-  theta_rep[s,] <- rnorm(J, fit2_sim$mu[s], fit2_sim$tau[s])
+  theta_rep[s,] <- rnorm(J, fit0_sim$mu[s], fit0_sim$tau[s])
   beta_rep[s,] <- rnorm(J, theta_rep[s,], df$sei)
 }
-quantile(beta_rep, probs = c(.025, .975))
 
+median(beta_rep)
+quantile(beta_rep, probs = c(.025, .975))
 quantile(beta_rep, probs = c(.25, .75))
+
+#use pooled se
+#pooled SE
+pooled_se <- sqrt(((0.008^2)*1740 + (0.038^2)*154 + (0.009^2)*9648 + (0.01^2)*40)/(1740 + 154 + 9648 + 40))
+pooled_se  #0.009830299
+
+for (s in 1:n_sims){
+  theta_rep[s,] <- rnorm(J, fit0_sim$mu[s], fit0_sim$tau[s])
+  beta_rep[s,] <- rnorm(J, theta_rep[s,], pooled_se)
+}
+median(beta_rep)
+quantile(beta_rep, probs = c(.025, .975))
 
 
 
@@ -126,7 +138,7 @@ bias3_rep <- array(NA, c(n_sims, J))
 theta_rep <- array(NA, c(n_sims, J))
 beta_rep <- array(NA, c(n_sims, J))
 
-#If only bias1 and bias3 are present for future study 
+#If biases 1 and 2 are present for future study 
 for (s in 1:n_sims){
   gamma_rep[s,] <- rnorm(J, fit2_sim$mu[s], fit2_sim$tau[s])
   
@@ -134,7 +146,7 @@ for (s in 1:n_sims){
   bias2_rep[s,] <- fit2_sim$bias[s,2] 
   bias3_rep[s,] <- fit2_sim$bias[s,3] 
   
-  theta_rep[s,] <-  gamma_rep[s,] + bias1_rep[s,] + bias3_rep[s,]
+  theta_rep[s,] <-  gamma_rep[s,] + bias1_rep[s,] + bias2_rep[s,]
   
   beta_rep[s,] <- rnorm(J, theta_rep[s,], df$sei)
 }
@@ -148,6 +160,22 @@ median(beta_rep)
 
 quantile(beta_rep, probs = c(.025, .975))
 
+
+for (s in 1:n_sims){
+  gamma_rep[s,] <- rnorm(J, fit2_sim$mu[s], fit2_sim$tau[s])
+  
+  bias1_rep[s,] <- fit2_sim$bias[s,1]
+  bias2_rep[s,] <- fit2_sim$bias[s,2] 
+  bias3_rep[s,] <- fit2_sim$bias[s,3] 
+  
+  theta_rep[s,] <-  gamma_rep[s,] + bias1_rep[s,] + bias3_rep[s,]
+  
+  beta_rep[s,] <- rnorm(J, theta_rep[s,], pooled_se)
+}
+
+median(beta_rep)
+
+quantile(beta_rep, probs = c(.025, .975))
 
 
 ##plot diagnosis

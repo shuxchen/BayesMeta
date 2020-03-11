@@ -17,7 +17,7 @@ model {
   for (j in 1:J)
   beta[j] ~ normal(gamma[j], sigma[j]);
   gamma ~ normal(mu, tau);
-  mu ~ normal(0, 0.1);
-  tau ~ cauchy(0, 0.05);
+  mu ~ normal(0, 10);
+  tau ~ cauchy(0, 0.005);
 }
 

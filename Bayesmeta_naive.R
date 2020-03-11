@@ -13,16 +13,19 @@ library(dplyr)
 publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Grabowski (2007)")
 yi <- c(-0.094, -0.097, -0.053, -0.09)
 sei <- c(0.008, 0.038, 0.009, 0.01)
+N <- c(1740, 154, 9648, 40)
 
 sd(sei)
 
 bias_IV <- c(1, 0, 1, 1)
 bias_t <- c(0, 0, 1, 0)
 bias_pb <- c(0, 0, 1, 1)
+bias_unit <- c(0, 1, 1, 1)
 bias_class <- c(1, 1, 0, 0)
 bias_size <- c(1, 1, 0, 1)
 
-df <- data.frame(publication, yi, sei, bias_IV, bias_t, bias_pb)
+df <- data.frame(publication, yi, sei, bias_IV, bias_pb, bias_unit)
+df <- data.frame(publication, yi, sei, bias_IV, bias_pb)
 
       
 ma01 <- bayesmeta(y = df[,"yi"], 
@@ -30,7 +33,7 @@ ma01 <- bayesmeta(y = df[,"yi"],
                   labels = df[,"publication"], 
                   mu.prior.mean = 0, 
                   mu.prior.sd = 10,
-                  tau.prior = function(t){dhalfcauchy(t,scale=0.05)})
+                  tau.prior = function(t){dhalfcauchy(t,scale=0.005)})
 
 
 ma01 <- bayesmeta(y = df[,"yi"], 
@@ -63,6 +66,10 @@ hn01 <- normalmixture(cdf=function(t){phalfnormal(t, scale=0.1)})
 hc01 <- normalmixture(cdf=function(t){phalfcauchy(t, scale=0.1)})
 hn001 <- normalmixture(cdf=function(t){phalfnormal(t, scale=0.01)})
 hc001 <- normalmixture(cdf=function(t){phalfcauchy(t, scale=0.01)})
+
+hc005 <- normalmixture(cdf=function(t){phalfcauchy(t, scale=0.005)})
+hc0025 <- normalmixture(cdf=function(t){phalfcauchy(t, scale=0.0025)})
+hc0001 <- normalmixture(cdf=function(t){phalfcauchy(t, scale=0.0001)})
 
 
 q975 <- c(
