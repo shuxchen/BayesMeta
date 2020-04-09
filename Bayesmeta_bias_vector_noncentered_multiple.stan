@@ -1,9 +1,11 @@
 data {
   int<lower=0> J;                         // number of studies
+  int<lower=0> L;                         // number of models (may be multiple for one study)
   int<lower=0> K;                         // number of biases
-  vector[J] beta;                         // estimated beta coefficient
-  vector<lower=0>[J] sigma;               // standard error of beta coefficient
-  matrix[J, K] I_bias;
+  vector[L] beta;                         // estimated beta coefficient
+  vector<lower=0>[L] sigma;               // which study the model belongs to 
+  matrix[L, K] I_bias;
+  matrix[L, J] L_matrix;
 }
 
 parameters {
@@ -14,10 +16,10 @@ parameters {
 }
 
 transformed parameters {
-  vector[J] theta;
+  vector[L] theta;
   vector[J] gamma;
   gamma = mu + tau * gamma_tilde;
-  theta = gamma + I_bias * bias;
+  theta = L_matrix *gamma   + I_bias * bias;
 }
 
 model {

@@ -84,6 +84,17 @@ fit2 <- stan(
   control = list(adapt_delta = 0.99)
 )
 
+fit2 <- stan(
+  file = "Bayesmeta_bias_vector_noncentered.stan",  # Stan program
+  data = stan.dat,    # named list of data
+  chains = 4,             # number of Markov chains
+  warmup = 1000,          # number of warmup iterations per chain
+  iter = 6000,            # total number of iterations per chain
+  cores = 4,              # number of cores (could use one per chain)
+  refresh = 0,            # no progress shown
+  control = list(adapt_delta = 0.9995,
+                 max_treedepth = 20)
+)
 
 pairs(fit1)
 print(fit1)

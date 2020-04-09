@@ -9,8 +9,10 @@ sd(sei)
 pooled_se <- sqrt(((0.006^2)*1740 + (0.0031^2)*343 + (0.0016^2)*339)/(1740 + 343 + 339))
 pooled_se  #0.005251875
 
+bias_IV <- c(1, 0, 1)
+bias_unit <- c(0, 1, 1)
 
-df <- data.frame(publication, yi, sei)
+df <- data.frame(publication, yi, sei, bias_IV, bias_unit)
 
 ma02 <- bayesmeta(y = df[,"yi"], 
                   sigma = df[,"sei"],
