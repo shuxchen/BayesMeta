@@ -7,38 +7,22 @@ data {
   vector[J_obs + J_mis] beta;                         // estimated beta coefficient
   vector<lower=0>[J_obs + J_mis] sigma;           // standard error of beta coefficient
   vector<lower=0>[J_obs + J_mis] N_mean;          // mean # of entrants
-  #vector[J] beta;                         // estimated beta coefficient
-  #vector<lower=0>[J] sigma;           // standard error of beta coefficient
-  #vector<lower=0>[J] N_mean;          // mean # of entrants
 
+  int<lower=0> P;                         // number of entrant groups (1, 2, 3, 4+)
 
-  real<lower=0, upper=1> p1_obs;   // % with second entrant
-  real<lower=0, upper=1> p2_obs;   // % with third entrant
-  real<lower=0, upper=1> p3_obs;   // % with 4+ entrants
-  #vector<lower=0, upper=1>[J_obs + J_mis] p1_obs;   // % with second entrant
-  #vector<lower=0, upper=1>[J_obs + J_mis] p2_obs;   // % with third entrant
-  #vector<lower=0, upper=1>[J_obs + J_mis] p3_obs;   // % with 4+ entrants
-  #vector<lower=0, upper=1>[J_obs + J_mis] p1;   // % with second entrant
-  #vector<lower=0, upper=1>[J_obs + J_mis] p2;   // % with third entrant
-  #vector<lower=0, upper=1>[J_obs + J_mis] p3;   // % with 4+ entrants
-
+  vector<lower = 0, upper =1>[P] p_obs;           // % with each entrant group, in observed 
 
   int<lower=0> M;                         // number of studies with categorical N
-  #vector[M] beta1;                         // estimated beta1 coefficient
-  #vector[M] beta2;                         // estimated beta2 coefficient
-  #vector[M] beta3;                         // estimated beta3 coefficient
+
   real beta1;                         // estimated beta1 coefficient
   real beta2;                         // estimated beta2 coefficient
   real beta3;                         // estimated beta3 coefficient
 
-  #vector<lower=0>[M] sigma1;               // standard error of beta1 coefficient
-  #vector<lower=0>[M] sigma2;               // standard error of beta2 coefficient
-  #vector<lower=0>[M] sigma3;               // standard error of beta3 coefficient
   real<lower=0> sigma1;               // standard error of beta1 coefficient
   real<lower=0> sigma2;               // standard error of beta2 coefficient
   real<lower=0> sigma3;               // standard error of beta3 coefficient
   
-  
+  vector<lower=0, upper=1>[P] alpha;      // dirichelet distribution 
 
 }
 
@@ -54,13 +38,8 @@ parameters {
   vector[J] gamma2_tilde;                 // per study effect
   vector[J] gamma3_tilde;                 // per study effect
   
-  vector<lower=0, upper=1>[J_mis] p1_mis;     // % with second entrant
-  vector<lower=0, upper=1>[J_mis] p2_mis;     // % with third entrant
-  vector<lower=0, upper=1>[J_mis] p3_mis;     // % with 4+ entrants
+  simplex[P] p_mis[J_mis];       // % with different entrants
 
-  #vector[M] gamma1_cat_tilde;             // per study effect
-  #vector[M] gamma2_cat_tilde;             // per study effect
-  #vector[M] gamma3_cat_tilde;             // per study effect
   real gamma1_cat_tilde;             // per study effect
   real gamma2_cat_tilde;             // per study effect
   real gamma3_cat_tilde;             // per study effect
@@ -73,64 +52,58 @@ parameters {
   real<lower=0> tau2;                     // deviation of effects
   real<lower=0> tau3;                     // deviation of effects
   
-  vector<lower=0, upper=1>[P] alpha;      // dirichelet distribution 
-  simplex[P] p[J];         
-
 }
 
 transformed parameters {
   vector[J] gamma;
-  #vector[M] gamma1;
-  #vector[M] gamma2;
-  #vector[M] gamma3;
 
   real gamma1;
   real gamma2;
   real gamma3;
   
-  vector[J] p1;     // % with second entrant
-  vector[J] p2;     // % with third entrant
-  vector[J] p3;     // % with 4+ entrants
-
-  vector<lower=0>[J_mis] N4_mis;                      // Number of entrants (4+)
+  vector<lower=0, upper=1>[J] p1;     // % with second entrant
+  vector<lower=0, upper=1>[J] p2;     // % with third entrant
+  vector<lower=0, upper=1>[J] p3;     // % with 4+ entrants
 
 
-  p1[ii_obs] = p1_obs;
+  vector<lower=0>[J] N4_sim;                      // Number of entrants (4+)
+  vector<lower=0>[J] N4;                      // Number of entrants (4+)
+  
+  vector<lower=0, upper=1>[J_mis] p1_mis;     // % with second entrant
+  vector<lower=0, upper=1>[J_mis] p2_mis;     // % with third entrant
+  vector<lower=0, upper=1>[J_mis] p3_mis;     // % with 4+ entrants
+
+  for (j in 1:J_mis){
+    p1_mis[j] = p_mis[j][2];
+    p2_mis[j] = p_mis[j][3];
+    p3_mis[j] = p_mis[j][4];
+
+  } 
+  
   p1[ii_mis] = p1_mis;
-  p2[ii_obs] = p2_obs;
   p2[ii_mis] = p2_mis;
-  p3[ii_obs] = p3_obs;
   p3[ii_mis] = p3_mis;
-  #p1 = p1_obs;
-  #p2 = p2_obs;
-  #p3 = p3_obs;
-  
-  
-  for (j in ii_mis) {
-    N4_mis[j] = (N_mean[j] - ( 1 - p[j] )/p3[j];
+  p1[ii_obs] = p_obs[2];
+  p2[ii_obs] = p_obs[3];
+  p3[ii_obs] = p_obs[4];
+
+  for (j in 1:J) {
+    N4_sim[j] = (N_mean[j] - ( 1 - p1[j] - p2[j] - p3[j]) - 2*p1[j] - 3*p2[j] )/p3[j];
   }
   
-  gamma = mu1 * p1 + mu2 * p2 + mu3 * p3 + tau1 * gamma1_tilde + tau2 * gamma2_tilde + tau3 * gamma3_tilde;
+  for (j in 1:J_mis) {
+    N4[j] = fmin(N4_sim[j], 10);
+  }
+  N4[4] = N4_sim[4];
+  
+  gamma = mu1 * p1 + mu2 * p2 + N4'*mu3 * p3 - 3* mu3 * p3  + tau1 * gamma1_tilde + tau2 * gamma2_tilde + tau3 * gamma3_tilde;
 
- 
   gamma1 = mu1 + tau1 * gamma1_cat_tilde;
 
   gamma2 = mu2 + tau2 * gamma2_cat_tilde;
 
   gamma3 = mu3 + tau3 * gamma3_cat_tilde;
   
-
-
-  
-  #p1[3:4] = p1_obs[1:2];
-  #p1[1:2] = p1_mis[1:2];
-  #p2[3:4] = p2_obs[1:2];
-  #p2[1:2] = p2_mis[1:2];
-  #p3[3:4] = p3_obs[1:2];
-  #p3[1:2] = p3_mis[1:2];
-
-
-
 }
 
 model {
@@ -150,8 +123,8 @@ model {
   gamma2_cat_tilde ~ normal(0, 1);
   gamma3_cat_tilde ~ normal(0, 1);
   
-  for (i in 1:J_mis) {
-      p[i] ~ dirichlet(alpha);
+  for (j in 1:J_mis) {
+      p_mis[j] ~ dirichlet(alpha);
     }  
 
   beta ~ normal(gamma, sigma);

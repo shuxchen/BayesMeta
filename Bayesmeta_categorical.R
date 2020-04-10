@@ -129,6 +129,10 @@ J_mis <- nrow(df) - J_obs
 ii_obs <- c(4)
 ii_mis <- c(1, 2, 3)
 
+p1_obs <- c(36/40)
+p2_obs <- c(33/40)
+p3_obs <- c(29/40)
+
 stan.dat_nobias_cat_with_3NA <- list(J_obs = J_obs, 
                                     J_mis = J_mis,
                                     ii_obs = ii_obs,
@@ -161,8 +165,41 @@ fit3 <- stan(
 
 plot(fit3, plotfun = "trace", pars = c("mu1", "mu2", "mu3"), inc_warmup = TRUE, nrow = 3)
 
+alpha = c(0.14, 0.14, 0.18, 0.54)
+p_obs = c(4/40, 3/40, 4/40, 29/40)
+stan.dat_nobias_cat_with_3NA <- list(J_obs = J_obs, 
+                                     J_mis = J_mis,
+                                     ii_obs = ii_obs,
+                                     ii_mis = ii_mis,
+                                     beta = df$yi, 
+                                     sigma = df$sei,
+                                     N_mean = df$N_mean,
+                                     P = 4,
+                                     #p1_obs = p1_obs,
+                                     #p2_obs = p2_obs,
+                                     #p3_obs = p3_obs,
+                                     p_obs = p_obs,
+                                     alpha = alpha,
+                                     M = M,
+                                     beta1 = df2$y1i,
+                                     sigma1 = df2$se1i,
+                                     beta2 = df2$y2i,
+                                     sigma2 = df2$se2i,
+                                     beta3 = df2$y3i,
+                                     sigma3 = df2$se3i)
 
+fit3 <- stan(
+  file = "Bayesmeta_nobias_noncentered_cat_with_3NA.stan",  # Stan program
+  data = stan.dat_nobias_cat_with_3NA,    # named list of data
+  chains = 4,             # number of Markov chains
+  warmup = 1000,          # number of warmup iterations per chain
+  iter = 6000,            # total number of iterations per chain
+  cores = 4,              # number of cores (could use one per chain)
+  refresh = 0,            # no progress shown
+  control = list(adapt_delta = 0.999)
+)
 
-p1_obs <- c(36/40)
-p2_obs <- c(33/40)
-p3_obs <- c(29/40)
+plot(fit3, plotfun = "trace", pars = c("N4[1]", "N4[2]", "N4[3]"), inc_warmup = TRUE, nrow = 3)
+
+print(fit3)
+
