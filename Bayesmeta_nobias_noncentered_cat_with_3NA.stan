@@ -8,7 +8,7 @@ data {
   vector<lower=0>[J_obs + J_mis] sigma;           // standard error of beta coefficient
   vector<lower=0>[J_obs + J_mis] N_mean;          // mean # of entrants
 
-  int<lower=0> P;                         // number of entrant groups (1, 2, 3, 4+)
+  int<lower=0> P;                          // number of entrant groups (1, 2, 3, ..., 10, 10+)
 
   vector<lower = 0, upper =1>[P] p_obs;           // % with each entrant group, in observed 
 
@@ -96,7 +96,8 @@ transformed parameters {
   }
   N4[4] = N4_sim[4];
   
-  gamma = mu1 * p1 + mu2 * p2 + N4'*mu3 * p3 - 3* mu3 * p3  + tau1 * gamma1_tilde + tau2 * gamma2_tilde + tau3 * gamma3_tilde;
+  gamma = mu1 * p1 + mu2 * p2 + N4'*mu3 * p3 + tau1 * gamma1_tilde + tau2 * gamma2_tilde + tau3 * gamma3_tilde;
+
 
   gamma1 = mu1 + tau1 * gamma1_cat_tilde;
 
