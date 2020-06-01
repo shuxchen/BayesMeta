@@ -11,9 +11,9 @@ rstan_options(auto_write = TRUE)
 publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Grabowski (2007)")
 yi <- c(-0.094, -0.097, -0.053, -0.09)
 sei <- c(0.008, 0.038, 0.009, 0.01)
-N_mean <- c(3.62, 3.62, 3.31, 8)
+N_mean <- c(3.62, 3.62, 3.31)
 
-df <- data.frame(publication, yi, sei, N_mean)
+df <- data.frame(publication, yi, sei)
 
 # One study with categorical N
 publication2 <- rep("Tenn (2014)", 7)
@@ -61,10 +61,10 @@ stan.dat_nobias_cat <- list(J_obs = J_obs,
                                      ii_mis = ii_mis,
                                      beta = df$yi, 
                                      sigma = df$sei,
-                                     N_mean = df$N_mean,
+                                     N_mean = N_mean,
                                      P = 11, # number of entrant groups 
                                      p_obs = p_obs,
-                                     alpha = alpha,
+                                     #alpha = alpha,
                                      #M = 1,
                                      beta1 = df2$y1i,
                                      sigma1 = df2$se1i,
@@ -74,20 +74,20 @@ stan.dat_nobias_cat <- list(J_obs = J_obs,
                                      sigma3 = df2$se3i)
 
 fit <- stan(
-  file = "Bayesmeta_nobias_noncentered_cat_with_3NA.stan",  # Stan program
+  file = "Bayesmeta_nobias_noncentered_cat_NB.stan",  # Stan program
   data = stan.dat_nobias_cat,    # named list of data
   chains = 4,             # number of Markov chains
   warmup = 1000,          # number of warmup iterations per chain
   iter = 6000,            # total number of iterations per chain
   cores = 4,              # number of cores (could use one per chain)
-  refresh = 0,            # no progress shown
-  control = list(adapt_delta = 0.9999,
-                 max_treedepth = 20)
+  #refresh = 1000,            # no progress shown
+  control = list(adapt_delta = 0.995,
+                 max_treedepth = 18)
 )
 
 plot(fit, plotfun = "trace", pars = c("mu1", "mu2", "mu3"), inc_warmup = TRUE, nrow = 3)
 
-plot(fit, plotfun = "trace", pars = c("weight_sim[1]", "weight_sim[2]", "weight_sim[3]", "weight_sim[4]"), inc_warmup = TRUE, nrow = 4)
+plot(fit, plotfun = "trace", pars = c("weight_sim[1]", "weight_sim[2]", "weight_sim[3]"), inc_warmup = TRUE, nrow = 4)
 
 print(fit)
 

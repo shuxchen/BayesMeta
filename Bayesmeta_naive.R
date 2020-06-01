@@ -19,7 +19,7 @@ sd(sei)
 
 bias_IV <- c(1, 0, 1, 1)
 bias_t <- c(0, 0, 1, 0)
-bias_pb <- c(0, 0, 1, 1)
+bias_pb <- c(0, 0, 1, 0)
 bias_unit <- c(0, 1, 1, 1)
 bias_class <- c(1, 1, 0, 0)
 bias_size <- c(1, 1, 0, 1)

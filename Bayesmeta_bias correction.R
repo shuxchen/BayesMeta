@@ -7,7 +7,7 @@ sd(sei)
 
 bias_IV <- c(1, 0, 1, 0, 1)
 bias_t <- c(0, 0, 1, 1, 0)
-bias_pb <- c(0, 0, 1, 1, 1)
+bias_pb <- c(0, 0, 1, 1, 0)
 bias_unit <- c(0, 1, 1, 1, 1)
 bias_class <- c(1, 1, 0, 0, 0)
 bias_size <- c(1, 1, 0, 0, 1)
@@ -36,13 +36,18 @@ stan.dat <- list(L = L,
 fit3 <- stan(
   file = "Bayesmeta_bias_vector_noncentered_multiple.stan",  # Stan program
   data = stan.dat,    # named list of data
-  chains = 1,             # number of Markov chains
+  chains = 4,             # number of Markov chains
   warmup = 1000,          # number of warmup iterations per chain
-  iter = 2000,            # total number of iterations per chain
-  #cores = 4,              # number of cores (could use one per chain)
+  iter = 6000,            # total number of iterations per chain
+  cores = 4,              # number of cores (could use one per chain)
   refresh = 0,            # no progress shown
-  control = list(adapt_delta = 0.99)
+  control = list(adapt_delta = 0.999,
+                 max_treedepth = 20)
 )
+
+print(fit3)
+
+plot(fit3, plotfun = "trace", pars = c("mu", "tau"), inc_warmup = TRUE, nrow = 2)
 
 fit3_sim <- extract(fit3)
 
@@ -82,3 +87,6 @@ hist(beta_rep[,4])
 median(beta_rep)
 
 quantile(beta_rep, probs = c(.025, .975))
+
+
+

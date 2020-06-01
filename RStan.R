@@ -102,6 +102,7 @@ plot(fit1)
 plot(fit1, plotfun = "trace", pars = c("mu", "tau"), inc_warmup = TRUE, nrow = 2)
 plot(fit2, plotfun = "trace", pars = c("mu", "tau"), inc_warmup = TRUE, nrow = 2)
 
+print(summary(fit2),digits=10)
 
 print(fit2,"mu",probs=c(.025,.975))
 print(fit2,"tau",probs=c(.025,.975))

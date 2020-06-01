@@ -14,20 +14,20 @@ data {
 
   #int<lower=0> M;                         // number of studies with categorical N
 
-  #vector[P-4] beta1;                         // estimated beta coefficient, for k = 4, 5, ..., 10
-  #vector[P-4] beta2;                         // estimated beta coefficient, for k = 4, 5, ..., 10
-  #vector[P-4] beta3;                         // estimated beta coefficient, for k = 4, 5, ..., 10
+  vector[P-4] beta1;                         // estimated beta coefficient, for k = 4, 5, ..., 10
+  vector[P-4] beta2;                         // estimated beta coefficient, for k = 4, 5, ..., 10
+  vector[P-4] beta3;                         // estimated beta coefficient, for k = 4, 5, ..., 10
 
-  #vector<lower=0>[P-4] sigma1;                     // standard error of beta1 coefficient
-  #vector<lower=0>[P-4] sigma2;                     // standard error of beta2 coefficient
-  #vector<lower=0>[P-4] sigma3;                // standard error of beta3 coefficient, for k = 4, 5, ..., 10
+  vector<lower=0>[P-4] sigma1;                     // standard error of beta1 coefficient
+  vector<lower=0>[P-4] sigma2;                     // standard error of beta2 coefficient
+  vector<lower=0>[P-4] sigma3;                // standard error of beta3 coefficient, for k = 4, 5, ..., 10
 
-  real beta1;
-  real beta2;
-  real beta3;
-  real<lower=0> sigma1;
-  real<lower=0> sigma2;
-  real<lower=0> sigma3;
+  #real beta1;
+  #real beta2;
+  #real beta3;
+  #real<lower=0> sigma1;
+  #real<lower=0> sigma2;
+  #real<lower=0> sigma3;
   
   vector<lower=0, upper=1>[P] alpha;        // dirichelet distribution 
 
@@ -47,13 +47,13 @@ parameters {
   
   simplex[P] p_mis[J_mis];           // % with different entrants
 
-  #vector[P-4] gamma1_cat_tilde;             // per study effect
-  #vector[P-4] gamma2_cat_tilde;             // per study effect
-  #vector[P-4] gamma3_cat_tilde;             // per study effect
+  vector[P-4] gamma1_cat_tilde;             // per study effect
+  vector[P-4] gamma2_cat_tilde;             // per study effect
+  vector[P-4] gamma3_cat_tilde;             // per study effect
 
-  real gamma1_cat_tilde;
-  real gamma2_cat_tilde;
-  real gamma3_cat_tilde;
+  #real gamma1_cat_tilde;
+  #real gamma2_cat_tilde;
+  #real gamma3_cat_tilde;
   
   
   real mu1;                               // mean effect of second entrant
@@ -69,12 +69,12 @@ parameters {
 transformed parameters {
   vector[J] gamma;
 
-  #vector[P-4] gamma1;
-  #vector[P-4] gamma2;
-  #vector[P-4] gamma3;
-  real gamma1;
-  real gamma2;
-  real gamma3;
+  vector[P-4] gamma1;
+  vector[P-4] gamma2;
+  vector[P-4] gamma3;
+  #real gamma1;
+  #real gamma2;
+  #real gamma3;
 
   vector<lower=0, upper=1>[J] p1;     // % with first entrant
   vector<lower=0, upper=1>[J] p2;     // % with second entrant
@@ -167,7 +167,7 @@ transformed parameters {
 
     #gamma[j] = (mu1 * p2[j] + mu2 * p3[j] +  mu3 * (p4[j]*4 + p5[j]*5 + p6[j]*6 + p7[j]*7 +p8[j]*8 + p9[j]*9 + p10[j]*10))/(1 - p1[j]) + tau1 * gamma1_tilde[j] + tau2 * gamma2_tilde[j] + tau3 * gamma3_tilde[j];
    #gamma[j] = mu1 * p2_weighted[j] + mu2 * p3_weighted[j] + mu3 * p4_weighted[j] + tau1 * gamma1_tilde[j] + tau2 * gamma2_tilde[j] + tau3 * gamma3_tilde[j];
-   gamma[j] = mu1 * p2[j]' * weight_sim[j] + mu2 * p3[j]' * weight_sim[j] + mu3 * p4_sum[j]' * weight_sim[j] + tau1 * gamma1_tilde[j] + tau2 * gamma2_tilde[j] + tau3 * gamma3_tilde[j];
+       gamma[j] = mu1 * p2[j]' * weight_sim[j] + mu2 * p3[j]' * weight_sim[j] + mu3 * p4_sum[j]' * weight_sim[j] + tau1 * gamma1_tilde[j] + tau2 * gamma2_tilde[j] + tau3 * gamma3_tilde[j];
     
   }
   
