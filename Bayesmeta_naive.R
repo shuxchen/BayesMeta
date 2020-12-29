@@ -6,14 +6,20 @@ library(bayesplot)
 library(ggplot2)
 library(dplyr)
 
-#publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Saha (2006)", "Grabowski (2007)", "Regan (2008)")
-#yi <- c(-0.094, -0.073, -0.053, -0.0013, -0.09, 0.0023)
-#sei <- c(0.008, 0.019, 0.009, 0.0052, 0.01, 0.0018)
-
 publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Grabowski (2007)")
 yi <- c(-0.094, -0.097, -0.053, -0.09)
 sei <- c(0.008, 0.038, 0.009, 0.01)
 N <- c(1740, 154, 9648, 40)
+
+#SA including Regan's study
+publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Grabowski (2007)", "Regan (2008)")
+yi <- c(-0.094, -0.073, -0.053, -0.09, -0.0012)
+sei <- c(0.008, 0.019, 0.009, 0.01, 0.0039)
+df <- data.frame(publication, yi, sei)
+bias_IV <- c(1, 0, 1, 1, 0)
+bias_pb <- c(0, 0, 1, 0, 0)
+bias_unit <- c(0, 1, 1, 1, 1)
+
 
 sd(sei)
 

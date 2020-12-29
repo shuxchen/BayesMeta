@@ -16,14 +16,18 @@ N_mean <- c(3.62, 3.62, 3.31)
 df <- data.frame(publication, yi, sei)
 
 # One study with categorical N
-publication2 <- rep("Tenn (2014)", 7)
-y1i <- rep(-0.091, 7)
-se1i <- rep(0.035, 7)
-y2i <- rep(-0.087, 7)
-se2i <- rep(0.056, 7)
+publication2 <- rep("Tenn (2014)", 5)
+y1i <- rep(-0.091, 5)
+se1i <- rep(0.035, 5)
+y2i <- rep(-0.087, 5)
+se2i <- rep(0.056, 5)
+y3i <- rep(-0.109, 5)
+se3i <- rep(0.065, 5)
+y4i <- rep(-0.221, 5)
+se4i <- rep(0.077, 5)
 
-y3i <- c(-0.109/4, -0.221/5, -0.295/6, -0.362/7, -0.406/8, -0.455/9, -0.581/10)
-se3i <- c(0.065/4, 0.077/5, 0.082/6, 0.108/7, 0.126/8, 0.152/9, 0.246/10)
+y5i <- c(-0.295/6, -0.362/7, -0.406/8, -0.455/9, -0.581/10)
+se5i <- c(0.082/6, 0.108/7, 0.126/8, 0.152/9, 0.246/10)
 
 #publication2 <- c("Tenn (2014)")
 #y1i <- c(-0.091)
@@ -34,7 +38,7 @@ se3i <- c(0.065/4, 0.077/5, 0.082/6, 0.108/7, 0.126/8, 0.152/9, 0.246/10)
 #se3i <- c(0.152)
 
 
-df2 <- data.frame(publication2, y1i, se1i, y2i, se2i, y3i, se3i)
+df2 <- data.frame(publication2, y1i, se1i, y2i, se2i, y3i, se3i, y4i, se4i, y5i, se5i)
 
 set.seed(123)
 J <- nrow(df)
@@ -56,25 +60,29 @@ p_obs = c(4/40, 3/40, 4/40, 3/40, 4/40, 4/40, 1/40, 2/40, 3/40, 2/40, 10/40)
 
 ## Combine as data input
 stan.dat_nobias_cat <- list(J_obs = J_obs, 
-                                     J_mis = J_mis,
-                                     ii_obs = ii_obs,
-                                     ii_mis = ii_mis,
-                                     beta = df$yi, 
-                                     sigma = df$sei,
-                                     N_mean = N_mean,
-                                     P = 11, # number of entrant groups 
-                                     p_obs = p_obs,
-                                     #alpha = alpha,
-                                     #M = 1,
-                                     beta1 = df2$y1i,
-                                     sigma1 = df2$se1i,
-                                     beta2 = df2$y2i,
-                                     sigma2 = df2$se2i,
-                                     beta3 = df2$y3i,
-                                     sigma3 = df2$se3i)
+                            J_mis = J_mis,
+                            ii_obs = ii_obs,
+                            ii_mis = ii_mis,
+                            beta = df$yi, 
+                            sigma = df$sei,
+                            N_mean = N_mean,
+                            P = 11, # number of entrant groups 
+                            p_obs = p_obs,
+                            #alpha = alpha,
+                            #M = 1,
+                            beta1 = df2$y1i,
+                            sigma1 = df2$se1i,
+                            beta2 = df2$y2i,
+                            sigma2 = df2$se2i,
+                            beta3 = df2$y3i,
+                            sigma3 = df2$se3i,
+                            beta4 = df2$y4i,
+                            sigma4 = df2$se4i,
+                            beta5 = df2$y5i,
+                            sigma5 = df2$se5i)
 
 fit <- stan(
-  file = "Bayesmeta_nobias_noncentered_cat_NB.stan",  # Stan program
+  file = "Bayesmeta_nobias_noncentered_cat_weighted_mean_5_groups.stan",  # Stan program
   data = stan.dat_nobias_cat,    # named list of data
   chains = 4,             # number of Markov chains
   warmup = 1000,          # number of warmup iterations per chain
@@ -85,24 +93,13 @@ fit <- stan(
                  max_treedepth = 18)
 )
 
-fit <- stan(
-  file = "Bayesmeta_nobias_noncentered_cat_NB_modified.stan",  # Stan program
-  data = stan.dat_nobias_cat,    # named list of data
-  chains = 4,             # number of Markov chains
-  warmup = 1000,          # number of warmup iterations per chain
-  iter = 6000,            # total number of iterations per chain
-  cores = 4,              # number of cores (could use one per chain)
-  #refresh = 1000,            # no progress shown
-  control = list(adapt_delta = 0.995,
-                 max_treedepth = 18)
-)
-
-plot(fit, plotfun = "trace", pars = c("mu1", "mu2", "mu3"), inc_warmup = TRUE, nrow = 3)
+plot(fit, plotfun = "trace", pars = c("mu1", "mu2", "mu3", "mu4", "mu5"), inc_warmup = TRUE, nrow = 5)
 
 plot(fit, plotfun = "trace", pars = c("weight_sim[1]", "weight_sim[2]", "weight_sim[3]"), inc_warmup = TRUE, nrow = 4)
 
 print(fit)
 
+print(summary(fit),digits=5)
 
 fit_sim <- extract(fit)
 

@@ -11,7 +11,7 @@ rstan_options(auto_write = TRUE)
 publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Grabowski (2007)")
 yi <- c(-0.094, -0.097, -0.053, -0.09)
 sei <- c(0.008, 0.038, 0.009, 0.01)
-N_mean <- c(3.62, 3.62, 3.31)
+#N_mean <- c(3.62, 3.62, 3.31)
 
 df <- data.frame(publication, yi, sei)
 
@@ -48,10 +48,10 @@ ii_obs <- c(4)
 ii_mis <- c(1, 2, 3)
 
 # Dirichlet prior for missing % (from MEPS)
-alpha = c(0.140, 0.143, 0.177, 0.083, 0.081, 0.075, 0.108, 0.063, 0.048, 0.123, 0.130)
+#alpha = c(0.140, 0.143, 0.177, 0.083, 0.081, 0.075, 0.108, 0.063, 0.048, 0.123, 0.130)
 
 # % from one study where % of entrants is not missing
-p_obs = c(4/40, 3/40, 4/40, 3/40, 4/40, 4/40, 1/40, 2/40, 3/40, 2/40, 10/40)
+#p_obs = c(4/40, 3/40, 4/40, 3/40, 4/40, 4/40, 1/40, 2/40, 3/40, 2/40, 10/40)
 
 
 ## Combine as data input
@@ -61,9 +61,9 @@ stan.dat_nobias_cat <- list(J_obs = J_obs,
                                      ii_mis = ii_mis,
                                      beta = df$yi, 
                                      sigma = df$sei,
-                                     N_mean = N_mean,
+                                     #N_mean = N_mean,
                                      P = 11, # number of entrant groups 
-                                     p_obs = p_obs,
+                                     #p_obs = p_obs,
                                      #alpha = alpha,
                                      #M = 1,
                                      beta1 = df2$y1i,
@@ -74,7 +74,7 @@ stan.dat_nobias_cat <- list(J_obs = J_obs,
                                      sigma3 = df2$se3i)
 
 fit <- stan(
-  file = "Bayesmeta_nobias_noncentered_cat_NB.stan",  # Stan program
+  file = "Bayesmeta_nobias_noncentered_cat_mean.stan",  # Stan program
   data = stan.dat_nobias_cat,    # named list of data
   chains = 4,             # number of Markov chains
   warmup = 1000,          # number of warmup iterations per chain

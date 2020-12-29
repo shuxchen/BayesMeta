@@ -1,22 +1,19 @@
-publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Helland (2016)", "Grabowski (2007)")
-yi <- c(-0.094, -0.097, -0.053, -0.108,  -0.09)
-sei <- c(0.008, 0.038, 0.009, 0.031, 0.01)
-N <- c(1740, 154, 9648, 9648, 40)
+publication <- c("Dafny (2016)", "Frank (1995)", "Helland (2016)", "Helland (2016)", "Grabowski (2007)", "Regan (2008)", "Regan (2008)")
+yi <- c(-0.094, -0.097, -0.053, -0.108,  -0.09, 0.0023, -0.0012)
+sei <- c(0.008, 0.038, 0.009, 0.031, 0.01, 0.0018, 0.0039)
 
-sd(sei)
 
-bias_IV <- c(1, 0, 1, 0, 1)
-bias_t <- c(0, 0, 1, 1, 0)
-bias_pb <- c(0, 0, 1, 1, 0)
-bias_unit <- c(0, 1, 1, 1, 1)
-bias_class <- c(1, 1, 0, 0, 0)
-bias_size <- c(1, 1, 0, 0, 1)
+bias_IV <- c(1, 0, 1, 0, 1, 1, 0)
+bias_pb <- c(0, 0, 1, 1, 0, 0, 0)
+bias_unit <- c(0, 1, 1, 1, 1, 1, 1)
 
-L1 <- c(1, 0, 0, 0, 0) 
-L2 <- c(0, 1, 0, 0, 0) 
-L3 <- c(0, 0, 1, 1, 0) 
-L4 <- c(0, 0, 0, 0, 1) 
-L_matrix <- data.frame(L1, L2, L3, L4)
+L1 <- c(1, 0, 0, 0, 0, 0, 0) 
+L2 <- c(0, 1, 0, 0, 0, 0, 0) 
+L3 <- c(0, 0, 1, 1, 0, 0, 0) 
+L4 <- c(0, 0, 0, 0, 1, 0, 0) 
+L5 <- c(0, 0, 0, 0, 0, 1, 1) 
+
+L_matrix <- data.frame(L1, L2, L3, L4, L5)
 
 
 df <- data.frame(publication, yi, sei, bias_IV, bias_pb, bias_unit)
